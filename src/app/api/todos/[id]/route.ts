@@ -7,6 +7,7 @@ import {
 import { NextResponse } from "next/server";
 
 export async function GET(_: Request, { params }: { params: { id: string } }) {
+  params = await params;
   const todo = await getTodoById(params.id);
   return todo
     ? NextResponse.json(todo)
@@ -17,6 +18,7 @@ export async function PUT(
   request: Request,
   { params }: { params: { id: string } }
 ) {
+  params = await params;
   const updates = await request.json();
 
   const updatedTodo = await updateTodo(params.id, updates);
@@ -32,6 +34,7 @@ export async function PATCH(
   request: Request,
   { params }: { params: { id: string } }
 ) {
+  params = await params;
   const updates = await request.json();
 
   const updatedTodo = await patchTodo(params.id, updates);
@@ -47,6 +50,7 @@ export async function DELETE(
   _: Request,
   { params }: { params: { id: string } }
 ) {
+  params = await params;
   const deletedTodo = await deleteTodo(params.id);
 
   if (!deletedTodo) {

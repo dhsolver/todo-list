@@ -1,7 +1,7 @@
 "use client";
 
 import TodoForm from "@/components/TodoForm";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 const CreateTodoPage = () => {
   const router = useRouter();
