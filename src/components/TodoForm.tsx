@@ -38,6 +38,7 @@ const TodoForm: React.FC<TodoFormProps> = ({ todo, onSubmit }) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <input
+        data-testid="title"
         type="text"
         placeholder="Title"
         value={title}
@@ -45,6 +46,7 @@ const TodoForm: React.FC<TodoFormProps> = ({ todo, onSubmit }) => {
         className="w-full p-3 border border-gray-300"
       />
       <textarea
+        data-testid="description"
         placeholder="Description"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
@@ -52,6 +54,7 @@ const TodoForm: React.FC<TodoFormProps> = ({ todo, onSubmit }) => {
         rows={6}
       />
       <input
+        data-testid="dueDate"
         type="date"
         value={dueDate}
         onChange={(e) => setDueDate(e.target.value)}
@@ -59,12 +62,14 @@ const TodoForm: React.FC<TodoFormProps> = ({ todo, onSubmit }) => {
       />
       <div className="flex items-center justify-between mb-4">
         <button
+          data-testid="saveBtn"
           type="submit"
           className="w-1/2 mr-2 py-2 bg-blue-600 text-white border border-blue-600 hover:bg-blue-700 transition cursor-pointer"
         >
           {todo ? "Save Changes" : "Add Task"}
         </button>
         <button
+          data-testid="cancelBtn"
           type="button"
           className="w-1/2 ml-2 py-2 text-black border border-black-600 hover:bg-gray-300 transition cursor-pointer"
           onClick={onCancel}

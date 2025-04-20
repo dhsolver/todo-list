@@ -74,6 +74,7 @@ export default function Home() {
 
       <div className="flex items-start flex-col gap-4 mb-6">
         <button
+          data-testid="addBtn"
           onClick={handleAdd}
           className="py-2 px-4 bg-white text-black border border-black hover:bg-gray-300 transition cursor-pointer"
         >
@@ -86,6 +87,7 @@ export default function Home() {
               Filter by status
             </label>
             <select
+              data-testid="filterSelect"
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
               className="border border-gray-400 px-3 py-2 text-sm bg-white text-gray-900"
@@ -102,6 +104,7 @@ export default function Home() {
               Sort by
             </label>
             <select
+              data-testid="sortSelect"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
               className="border border-gray-400 px-3 py-2 text-sm bg-white text-gray-900"
@@ -135,6 +138,7 @@ export default function Home() {
 
               <div className="flex items-center space-x-4">
                 <button
+                  data-testid={`toggleBtn-${todo.id}`}
                   onClick={(e) => {
                     e.preventDefault();
                     toggleComplete(todo);
@@ -148,6 +152,7 @@ export default function Home() {
                   />
                 </button>
                 <button
+                  data-testid={`deleteBtn-${todo.id}`}
                   onClick={(e) => {
                     e.preventDefault();
                     handleDelete(todo.id);
