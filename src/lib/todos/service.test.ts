@@ -26,12 +26,117 @@ describe("Todo Service", () => {
   });
 
   describe("getTodos", () => {
-    it("should fetch all todos", async () => {
+    it("should fetch all todos without filters or sorting", async () => {
       const mockTodos = [{ id: "1", title: "Test Todo" }];
       (prisma.todo.findMany as jest.Mock).mockResolvedValue(mockTodos);
 
-      const todos = await getTodos();
-      expect(prisma.todo.findMany).toHaveBeenCalledTimes(1);
+      const todos = await getTodos("", "");
+      expect(prisma.todo.findMany).toHaveBeenCalledWith({
+        where: {},
+        orderBy: {},
+      });
+      expect(todos).toEqual(mockTodos);
+    });
+
+    it("should fetch todos filtered by 'completed'", async () => {
+      const mockTodos = [
+        { id: "1", title: "Completed Todo", isCompleted: true },
+      ];
+      (prisma.todo.findMany as jest.Mock).mockResolvedValue(mockTodos);
+
+      const todos = await getTodos("", "completed");
+      expect(prisma.todo.findMany).toHaveBeenCalledWith({
+        where: { isCompleted: true },
+        orderBy: {},
+      });
+      expect(todos).toEqual(mockTodos);
+    });
+
+    it("should fetch todos filtered by 'incomplete'", async () => {
+      const mockTodos = [
+        { id: "1", title: "Incomplete Todo", isCompleted: false },
+      ];
+      (prisma.todo.findMany as jest.Mock).mockResolvedValue(mockTodos);
+
+      const todos = await getTodos("", "incomplete");
+      expect(prisma.todo.findMany).toHaveBeenCalledWith({
+        where: { isCompleted: false },
+        orderBy: {},
+      });
+      expect(todos).toEqual(mockTodos);
+    });
+
+    it("should fetch todos filtered by 'overdue'", async () => {
+      const mockTodos = [
+        { id: "1", title: "Overdue Todo", dueDate: "2025-04-20" },
+      ];
+      (prisma.todo.findMany as jest.Mock).mockResolvedValue(mockTodos);
+
+      const today = new Date().toISOString().slice(0, 10);
+      const todos = await getTodos("", "overdue");
+      expect(prisma.todo.findMany).toHaveBeenCalledWith({
+        where: { dueDate: { lt: today } },
+        orderBy: {},
+      });
+      expect(todos).toEqual(mockTodos);
+    });
+
+    it("should fetch todos sorted by 'title'", async () => {
+      const mockTodos = [
+        { id: "1", title: "A Todo" },
+        { id: "2", title: "B Todo" },
+      ];
+      (prisma.todo.findMany as jest.Mock).mockResolvedValue(mockTodos);
+
+      const todos = await getTodos("title", "");
+      expect(prisma.todo.findMany).toHaveBeenCalledWith({
+        where: {},
+        orderBy: { title: "asc" },
+      });
+      expect(todos).toEqual(mockTodos);
+    });
+
+    it("should fetch todos sorted by 'dueDate'", async () => {
+      const mockTodos = [
+        { id: "1", dueDate: "2025-04-20" },
+        { id: "2", dueDate: "2025-04-21" },
+      ];
+      (prisma.todo.findMany as jest.Mock).mockResolvedValue(mockTodos);
+
+      const todos = await getTodos("dueDate", "");
+      expect(prisma.todo.findMany).toHaveBeenCalledWith({
+        where: {},
+        orderBy: { dueDate: "asc" },
+      });
+      expect(todos).toEqual(mockTodos);
+    });
+
+    it("should fetch todos sorted by 'createdAt'", async () => {
+      const mockTodos = [
+        { id: "1", createdAt: "2025-04-18" },
+        { id: "2", createdAt: "2025-04-19" },
+      ];
+      (prisma.todo.findMany as jest.Mock).mockResolvedValue(mockTodos);
+
+      const todos = await getTodos("createdAt", "");
+      expect(prisma.todo.findMany).toHaveBeenCalledWith({
+        where: {},
+        orderBy: { createdAt: "asc" },
+      });
+      expect(todos).toEqual(mockTodos);
+    });
+
+    it("should fetch todos with both filter and sort applied", async () => {
+      const mockTodos = [
+        { id: "1", title: "Completed Todo", isCompleted: true },
+      ];
+      (prisma.todo.findMany as jest.Mock).mockResolvedValue(mockTodos);
+
+      const todos = await getTodos("title", "completed");
+      expect(prisma.todo.findMany).toHaveBeenCalledWith({
+        where: { isCompleted: true },
+        orderBy: { title: "asc" },
+      });
       expect(todos).toEqual(mockTodos);
     });
   });

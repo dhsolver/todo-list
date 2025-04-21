@@ -32,7 +32,6 @@ export const getTodos = async (
     }
   }
 
-  console.log("where", where);
   return prisma.todo.findMany({
     where,
     orderBy,

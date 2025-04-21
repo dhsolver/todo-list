@@ -57,80 +57,29 @@ describe("Home Page", () => {
     });
   });
 
-  it("filters todos by status", async () => {
-    const mockTodos = [
-      {
-        id: "1",
-        title: "Test Todo 1",
-        isCompleted: false,
-        createdAt: "2025-04-18",
-        dueDate: "2025-04-20",
-      },
-      {
-        id: "2",
-        title: "Test Todo 2",
-        isCompleted: true,
-        createdAt: "2025-04-19",
-        dueDate: "2025-04-21",
-      },
-    ];
-
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
-      json: jest.fn().mockResolvedValue(mockTodos),
-    });
-
+  it("updates the filter and fetches filtered todos", async () => {
     render(<Home />);
-
-    await waitFor(() => {
-      expect(screen.getByText("Test Todo 1")).toBeInTheDocument();
-      expect(screen.getByText("Test Todo 2")).toBeInTheDocument();
-    });
 
     const filterSelect = screen.getByTestId("filterSelect");
     await user.selectOptions(filterSelect, "completed");
 
     await waitFor(() => {
-      expect(screen.queryByText("Test Todo 1")).not.toBeInTheDocument();
-      expect(screen.getByText("Test Todo 2")).toBeInTheDocument();
+      expect(global.fetch).toHaveBeenCalledWith(
+        "/api/todos?sort=createdAt&filter=completed"
+      );
     });
   });
 
-  it("sorts todos by title", async () => {
-    const mockTodos = [
-      {
-        id: "1",
-        title: "B Task",
-        isCompleted: false,
-        createdAt: "2025-04-18",
-        dueDate: "2025-04-20",
-      },
-      {
-        id: "2",
-        title: "A Task",
-        isCompleted: true,
-        createdAt: "2025-04-19",
-        dueDate: "2025-04-21",
-      },
-    ];
-
-    (global.fetch as jest.Mock).mockResolvedValueOnce({
-      json: jest.fn().mockResolvedValue(mockTodos),
-    });
-
+  it("updates the sort order and fetches sorted todos", async () => {
     render(<Home />);
-
-    await waitFor(() => {
-      expect(screen.getByText("B Task")).toBeInTheDocument();
-      expect(screen.getByText("A Task")).toBeInTheDocument();
-    });
 
     const sortSelect = screen.getByTestId("sortSelect");
     await user.selectOptions(sortSelect, "title");
 
     await waitFor(() => {
-      const todos = screen.getAllByRole("listitem");
-      expect(todos[0]).toHaveTextContent("A Task");
-      expect(todos[1]).toHaveTextContent("B Task");
+      expect(global.fetch).toHaveBeenCalledWith(
+        "/api/todos?sort=title&filter=all"
+      );
     });
   });
 
@@ -210,6 +159,9 @@ describe("Home Page", () => {
     await user.click(deleteButton);
 
     await waitFor(() => {
+      expect(global.fetch).toHaveBeenCalledWith("/api/todos/1", {
+        method: "DELETE",
+      });
       expect(screen.queryByText("Test Todo 1")).not.toBeInTheDocument();
     });
   });
