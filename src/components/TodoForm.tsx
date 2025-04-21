@@ -16,6 +16,9 @@ const TodoForm: React.FC<TodoFormProps> = ({ todo, onSubmit }) => {
   const [title, setTitle] = useState(todo?.title || "");
   const [description, setDescription] = useState(todo?.description || "");
   const [dueDate, setDueDate] = useState(todo?.dueDate || "");
+  const [errors, setErrors] = useState<{ title?: string; dueDate?: string }>(
+    {}
+  );
   const router = useRouter();
 
   useEffect(() => {
@@ -26,8 +29,21 @@ const TodoForm: React.FC<TodoFormProps> = ({ todo, onSubmit }) => {
     }
   }, [todo]);
 
+  const validate = () => {
+    const newErrors: { title?: string; dueDate?: string } = {};
+    if (!title.trim()) {
+      newErrors.title = "Title is required.";
+    }
+    if (!dueDate.trim()) {
+      newErrors.dueDate = "Due date is required.";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validate()) return;
     onSubmit({ title, description, dueDate });
   };
 
@@ -37,29 +53,51 @@ const TodoForm: React.FC<TodoFormProps> = ({ todo, onSubmit }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <input
-        data-testid="title"
-        type="text"
-        placeholder="Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        className="w-full p-3 border border-gray-300"
-      />
-      <textarea
-        data-testid="description"
-        placeholder="Description"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        className="w-full p-3 border border-gray-300"
-        rows={6}
-      />
-      <input
-        data-testid="dueDate"
-        type="date"
-        value={dueDate}
-        onChange={(e) => setDueDate(e.target.value)}
-        className="w-full p-3 border border-gray-300"
-      />
+      <div>
+        <input
+          data-testid="title"
+          type="text"
+          placeholder="Title"
+          value={title}
+          required
+          onChange={(e) => setTitle(e.target.value)}
+          className={`w-full p-3 border ${
+            errors.title ? "border-red-500" : "border-gray-300"
+          }`}
+        />
+        {errors.title && (
+          <p data-testid="title-error" className="text-red-500 text-sm mt-1">
+            {errors.title}
+          </p>
+        )}
+      </div>
+      <div>
+        <textarea
+          data-testid="description"
+          placeholder="Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          className="w-full p-3 border border-gray-300"
+          rows={6}
+        />
+      </div>
+      <div>
+        <input
+          data-testid="dueDate"
+          type="date"
+          value={dueDate}
+          required
+          onChange={(e) => setDueDate(e.target.value)}
+          className={`w-full p-3 border ${
+            errors.dueDate ? "border-red-500" : "border-gray-300"
+          }`}
+        />
+        {errors.dueDate && (
+          <p data-testid="dueDate-error" className="text-red-500 text-sm mt-1">
+            {errors.dueDate}
+          </p>
+        )}
+      </div>
       <div className="flex items-center justify-between mb-4">
         <button
           data-testid="saveBtn"
