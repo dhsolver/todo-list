@@ -14,10 +14,10 @@ export default function Home() {
 
   useEffect(() => {
     fetchTodos();
-  }, []);
+  }, [sortBy, filter]);
 
   const fetchTodos = async () => {
-    const res = await fetch("/api/todos");
+    const res = await fetch(`/api/todos?sort=${sortBy}&filter=${filter}`);
     const data = await res.json();
     setTodos(data);
   };
@@ -38,33 +38,6 @@ export default function Home() {
   const handleAdd = () => {
     router.push(`/new`);
   };
-
-  // Apply filtering
-  const filteredTodos = todos.filter((todo) => {
-    if (filter === "completed") return todo.isCompleted;
-    if (filter === "incomplete") return !todo.isCompleted;
-    if (filter === "overdue")
-      return todo.dueDate && new Date(todo.dueDate) < new Date();
-    return true;
-  });
-
-  // Apply sorting
-  const sortedTodos = [...filteredTodos].sort((a, b) => {
-    if (sortBy === "title") return a.title.localeCompare(b.title);
-    if (sortBy === "dueDate") {
-      const aDate = a.dueDate
-        ? new Date(a.dueDate)
-        : new Date(8640000000000000); // max date
-      const bDate = b.dueDate
-        ? new Date(b.dueDate)
-        : new Date(8640000000000000);
-      return aDate.getTime() - bDate.getTime();
-    }
-    if (sortBy === "createdAt") {
-      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-    }
-    return 0;
-  });
 
   return (
     <>
@@ -118,7 +91,7 @@ export default function Home() {
       </div>
 
       <ul>
-        {sortedTodos.map((todo) => (
+        {todos.map((todo) => (
           <li
             key={todo.id}
             className="p-4 border-t border-gray-300 hover:bg-gray-100"

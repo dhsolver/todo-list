@@ -6,8 +6,37 @@ import { prisma } from "../prisma";
 type NewTodo = Omit<Todo, "id" | "createdAt" | "isCompleted">;
 type UpdateTodo = Partial<Omit<Todo, "id" | "createdAt">>;
 
-export const getTodos = async (): Promise<Todo[]> => {
-  return prisma.todo.findMany();
+export const getTodos = async (
+  sort: string,
+  filter: string
+): Promise<Todo[]> => {
+  let where = {},
+    orderBy = {};
+  if (filter) {
+    if (filter === "completed") {
+      where = { isCompleted: true };
+    } else if (filter === "incomplete") {
+      where = { isCompleted: false };
+    } else if (filter === "overdue") {
+      const today = new Date().toISOString().slice(0, 10); // "yyyy-mm-dd"
+      where = { dueDate: { lt: today } };
+    }
+  }
+  if (sort) {
+    if (sort === "title") {
+      orderBy = { title: "asc" };
+    } else if (sort === "dueDate") {
+      orderBy = { dueDate: "asc" };
+    } else if (sort === "createdAt") {
+      orderBy = { createdAt: "asc" };
+    }
+  }
+
+  console.log("where", where);
+  return prisma.todo.findMany({
+    where,
+    orderBy,
+  });
 };
 
 export const getTodoById = async (id: string): Promise<Todo | null> => {

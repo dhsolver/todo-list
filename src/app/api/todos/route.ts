@@ -1,8 +1,12 @@
 import { addTodo, getTodos } from "@/lib/todos/service";
 import { NextResponse } from "next/server";
 
-export async function GET() {
-  const res = await getTodos();
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+
+  const sort = searchParams.get("sort") ?? "";
+  const filter = searchParams.get("filter") ?? "";
+  const res = await getTodos(sort, filter);
   return NextResponse.json(res, { status: 200 });
 }
 
