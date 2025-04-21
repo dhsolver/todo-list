@@ -1,7 +1,7 @@
 "use client";
 
 import { Todo } from "@prisma/client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 
 import CheckSharpIcon from "@mui/icons-material/CheckSharp";
@@ -9,16 +9,21 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
-export default function TodoDetail({ params }: { params: { id: string } }) {
+export default function TodoDetail({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = use(params);
   const [todo, setTodo] = useState<Todo | null>(null);
   const router = useRouter();
 
   useEffect(() => {
     fetchTodo();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchTodo = async () => {
-    const res = await fetch(`/api/todos/${params.id}`);
+    const res = await fetch(`/api/todos/${id}`);
     const data = await res.json();
     setTodo(data);
   };

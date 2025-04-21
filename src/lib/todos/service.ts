@@ -49,7 +49,7 @@ export const patchTodo = async (
 
   const updateData = Object.fromEntries(
     Object.entries(updated).filter(
-      ([_, value]) => value !== null && value !== undefined
+      ([_, value]) => value !== null && value !== undefined // eslint-disable-line @typescript-eslint/no-unused-vars
     )
   );
 

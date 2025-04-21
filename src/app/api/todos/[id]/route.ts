@@ -6,9 +6,12 @@ import {
 } from "@/lib/todos/service";
 import { NextResponse } from "next/server";
 
-export async function GET(_: Request, { params }: { params: { id: string } }) {
-  params = await params;
-  const todo = await getTodoById(params.id);
+export async function GET(
+  _: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const todo = await getTodoById(id);
   return todo
     ? NextResponse.json(todo)
     : NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -16,12 +19,12 @@ export async function GET(_: Request, { params }: { params: { id: string } }) {
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  params = await params;
+  const { id } = await params;
   const updates = await request.json();
 
-  const updatedTodo = await updateTodo(params.id, updates);
+  const updatedTodo = await updateTodo(id, updates);
 
   if (!updatedTodo) {
     return NextResponse.json({ message: "Todo not found" }, { status: 404 });
@@ -32,12 +35,12 @@ export async function PUT(
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  params = await params;
+  const { id } = await params;
   const updates = await request.json();
 
-  const updatedTodo = await patchTodo(params.id, updates);
+  const updatedTodo = await patchTodo(id, updates);
 
   if (!updatedTodo) {
     return NextResponse.json({ message: "Todo not found" }, { status: 404 });
@@ -48,10 +51,10 @@ export async function PATCH(
 
 export async function DELETE(
   _: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  params = await params;
-  const deletedTodo = await deleteTodo(params.id);
+  const { id } = await params;
+  const deletedTodo = await deleteTodo(id);
 
   if (!deletedTodo) {
     return NextResponse.json({ message: "Todo not found" }, { status: 404 });
