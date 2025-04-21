@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
-    "db": "rm -f prisma/todos.db && prisma db push && prisma generate"
+    "setup:db": "rm -f prisma/todos.db && prisma db push && prisma generate"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
